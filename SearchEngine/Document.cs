@@ -19,6 +19,13 @@ namespace SearchEngine
             this.type = type;
         }
 
+        public Document(string fullPath)
+        {
+            int point = fullPath.LastIndexOf(".");
+            this.filePath = fullPath.Substring(0, point);
+            this.type = fullPath.Substring(point + 1);
+        }
+
         public string FilePath
         {
            get {return filePath; }
@@ -51,6 +58,32 @@ namespace SearchEngine
         public string ToString()
         {
             return this.filePath + "." + this.type;
+        }
+
+        public List<double> GetVector(HashSet<string> corpus)
+        {
+            List<double> result = new List<double>();
+            foreach (string term in corpus)
+            {
+                if (InvertedIndex.TFIndex().ContainsKey(term))
+                {
+                    if (InvertedIndex.TFIndex()[term].ContainsKey(this.ToString()))
+                    {
+                        double tf = InvertedIndex.getTF(this.ToString(), term);
+                        double idf = InvertedIndex.getIDF(term);
+                        result.Add(tf * idf);
+                    }
+                    else
+                    {
+                        result.Add(0);
+                    }
+                }
+                else
+                {
+                    result.Add(0);
+                }
+            }
+            return result;
         }
     }
 }
