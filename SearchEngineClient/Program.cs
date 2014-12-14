@@ -16,6 +16,7 @@ namespace SearchEngineClient
             Console.WriteLine(a.Type);
             
             Document b = new Document("C:\\Users\\LOLU\\Documents\\csc322\\doc2", "txt");
+            Document c = new Document("C:\\Users\\LOLU\\Books~Tutorials\\OSS2014.pdf", "txt");
             InvertedIndex.add(a);
             InvertedIndex.add(b);
 

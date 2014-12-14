@@ -1,4 +1,6 @@
-﻿using System;
+﻿using org.apache.pdfbox.pdmodel;
+using org.apache.pdfbox.util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,9 +53,28 @@ namespace SearchEngine
         //
         private string documentText()
         {
+            if (type == "pdf")
+            {
+                return ExtractTextFromPdf(this.ToString());
+            }
             string path = filePath + "." + type ;
             return System.IO.File.ReadAllText(@path);
         }
+
+        private static string ExtractTextFromPdf(string path)
+        {
+          PDDocument doc = null;
+          try {
+              doc = PDDocument.load(path);
+              PDFTextStripper stripper = new PDFTextStripper();
+              return stripper.getText(doc);
+          }
+          finally {
+            if (doc != null) {
+              doc.close();
+            }
+          }
+        }  
 
         public string ToString()
         {

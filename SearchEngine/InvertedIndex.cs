@@ -115,7 +115,7 @@ namespace SearchEngine
 
         public static double getIDF(string term)
         {
-            return Math.Log(numOfDocuments / dfIndex[term]);
+            return 1 + Math.Log(numOfDocuments / (dfIndex[term] + 1));
         }
     }
 }
