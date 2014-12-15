@@ -1,4 +1,5 @@
-﻿using org.apache.pdfbox.pdmodel;
+﻿using HtmlAgilityPack;
+using org.apache.pdfbox.pdmodel;
 using org.apache.pdfbox.util;
 using System;
 using System.Collections.Generic;
@@ -43,9 +44,19 @@ namespace SearchEngine
         //effects: returns an array of all the tokens found in a document.
         // A token is any sequence of characters seperated by a space.
         //throws NullPointerException if this is null.
-        public string[] tokens()
+        public List<string> tokens()
         {
-            return this.documentText().ToLower().Split(' ');
+            List<string> result = new List<string>();
+            List<string> stop_words = System.IO.File.ReadAllLines(
+                @"C:\Users\LOLU\Documents\csc322\stop-words.txt").ToList();
+            char[] delimiterChars = { ' ', ',', '.', ':', '\t' };
+            string[] tokens = this.documentText().ToLower().Split(delimiterChars);
+            foreach (string token in tokens){
+                if (!stop_words.Contains(token)){
+                    result.Add(token);
+                }
+            }
+            return result;
         }
 
         //requires: this must not be null
@@ -57,8 +68,32 @@ namespace SearchEngine
             {
                 return ExtractTextFromPdf(this.ToString());
             }
-            string path = filePath + "." + type ;
-            return System.IO.File.ReadAllText(@path);
+            else if (type == "html")
+            {
+                return ExtractTextFromHtml(this.ToString());
+            }
+            else if (type == "txt")
+            {
+                string path = filePath + "." + type;
+                return System.IO.File.ReadAllText(@path);
+            }
+            else
+            {
+                return "";
+            }
+            
+        }
+
+        private static string ExtractTextFromHtml(string path)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            var sb = new StringBuilder();
+            doc.LoadHtml(@path);
+            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//text()"))
+            {
+                sb.Append(node.InnerText.Trim());
+            }
+            return sb.ToString();
         }
 
         private static string ExtractTextFromPdf(string path)

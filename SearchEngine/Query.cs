@@ -51,7 +51,7 @@ namespace SearchEngine
         {
             Dictionary<string, List<int>> value = new Dictionary<string, List<int>>();
             HashSet<string> results = new HashSet<string>();
-            string[] terms = this.tokens();
+            List<string> terms = this.tokens();
             foreach (var term in terms)
             {
                 if (index.TryGetValue(term, out value))
@@ -69,7 +69,7 @@ namespace SearchEngine
         private HashSet<string> handlePQ()
         {
             List<HashSet<string>> results = new List<HashSet<string>>();
-            string[] terms = this.tokens();
+            List<string> terms = this.tokens();
             foreach (var term in terms)
             {
                 results.Add(new HashSet<string>(handleOWQ(term)));
@@ -85,14 +85,34 @@ namespace SearchEngine
         }
         
 
-        public string[] tokens()
+        public List<string> tokens()
         {
-            //strip stop words, duplicates, lemmatize and tokenize.
+            List<string> result = new List<string>();
+            List<string> stop_words = System.IO.File.ReadAllLines(
+                @"C:\Users\LOLU\Documents\csc322\stop-words.txt").ToList();
+            //strip stop words, lemmatize and tokenize.
             if (QueryType() == "PQ"){
                 char[] separator = {'\"'};
-                return queryString.TrimStart(separator).TrimEnd(separator).Split(' ');
+                return tokenize(queryString.TrimStart(separator).TrimEnd(separator));
             }
-            return queryString.Split(' ');
+            return tokenize(queryString);
+        }
+
+        private List<string> tokenize(string text)
+        {
+            List<string> result = new List<string>();
+            List<string> stop_words = System.IO.File.ReadAllLines(
+                @"C:\Users\LOLU\Documents\csc322\stop-words.txt").ToList();
+            char[] delimiterChars = { ' ', ',', '.', ':', '\t' };
+            string[] tokens = queryString.Split(delimiterChars);
+            foreach (string token in tokens)
+            {
+                if (!stop_words.Contains(token))
+                {
+                    result.Add(token);
+                }
+            }
+            return result;
         }
 
         // returns list of documents matching a query.

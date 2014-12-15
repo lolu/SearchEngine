@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace SearchEngine
 {
+
     public static class InvertedIndex
     {
         private static Dictionary<string, Dictionary<string, List<int>>> index;
@@ -24,8 +26,8 @@ namespace SearchEngine
         public static void add(Document document)
         {
             numOfDocuments += 1;
-            String[] terms = document.tokens();
-            for (int i = 0; i < terms.Length; i++)
+            List<string> terms = document.tokens();
+            for (int i = 0; i < terms.Count; i++)
             {
                 //term is already in index
                 if (index.ContainsKey(terms[i]))
@@ -63,7 +65,7 @@ namespace SearchEngine
                     dfIndex[terms[i]] = 1;
                 }
             }
-            //serialize();
+            serialize();
         }
 
         
@@ -71,7 +73,7 @@ namespace SearchEngine
         private static void serialize()
         {
             System.Xml.Serialization.XmlSerializer writer =
-                new System.Xml.Serialization.XmlSerializer(typeof(InvertedIndex));
+                new System.Xml.Serialization.XmlSerializer(typeof(Dictionary<string, Dictionary<string, List<int>>>));
             System.IO.StreamWriter file = new System.IO.StreamWriter(
                 @"c:\temp\InvertedIndex.xml");
             writer.Serialize(file, index);
@@ -115,7 +117,7 @@ namespace SearchEngine
 
         public static double getIDF(string term)
         {
-            return 1 + Math.Log(numOfDocuments / (dfIndex[term] + 1));
+            return Math.Log10(numOfDocuments / System.Convert.ToDouble(dfIndex[term]));
         }
     }
 }
