@@ -23,10 +23,14 @@ namespace SearchEngine
             vectorRep = query.GetVector(dataSet);
         }
 
+        public Vector(double[] vectorRep)
+        {
+            this.vectorRep = new List<double>(vectorRep);
+        }
+
         //compares two vectors and returns their similarity using cosine similarity model.
         public static double GetSimilarityScore(Vector vectorA, Vector vectorB)
-        {
-            
+        { 
             double dotProduct = GetDotProduct(vectorA, vectorB);
             if (dotProduct == 0)
             {
@@ -38,7 +42,7 @@ namespace SearchEngine
             }
         }
 
-        private static double GetVectorNorm(Vector vector)
+        public static double GetVectorNorm(Vector vector)
         {
             double result = 0.0;
             foreach (var weight in vector.vectorRep)
@@ -48,7 +52,7 @@ namespace SearchEngine
             return result;
         }
 
-        private static double GetDotProduct(Vector vectorA, Vector vectorB)
+        public static double GetDotProduct(Vector vectorA, Vector vectorB)
         {
             double result = 0.0;
             for (int i = 0; i < vectorA.vectorRep.Count; i++)

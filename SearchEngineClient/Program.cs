@@ -23,8 +23,6 @@ namespace SearchEngineClient
             InvertedIndex.add(b);
             InvertedIndex.add(c);
 
-            
-            
             /*
             Query query = new Query("open source information");
             Console.WriteLine(query.QueryType());
